@@ -27,8 +27,8 @@ var chartGroup = svg.append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 // Initial Params
-var chosenXAxis = "income";
-var chosenYAxis = "heathcare";
+var chosenXAxis = "poverty";
+var chosenYAxis = "smokes";
 
 function xScale(StateData, chosenXAxis) {
     var xLinScale = d3.scaleLinear().domain([d3.min(StateData, d => d[chosenXAxis]) * 0.8,
@@ -59,7 +59,7 @@ function renderXAxis(newXScale, xAxis) {
 }
 
 function renderYAxis(newYScale, yAxis) {
-    var bottomAxis = d3.axisLeft(newYScale);
+    var leftAxis= d3.axisLeft(newYScale);
 
     yAxis.transition()
         .duration(1000)
@@ -73,54 +73,56 @@ function renderCircles(circlesGroup, newXScale, chosenXAxis, newYScale, chosenYA
     circlesGroup.transition()
         .duration(1000)
         .attr("cx", d => newXScale(d[chosenXAxis]))
-        .attr("cx", d => newYScale(d[chosenYAxis]))
+        .attr("cy", d => newYScale(d[chosenYAxis]))
 
     return circlesGroup;
 }
 
-function updateToolTip(chosenXAxis, circlesGroup, chosenYAxis) {
+// function updateToolTip(chosenXAxis, circlesGroup, chosenYAxis) {
 
-    var label;
+//     var ylabel;
 
-    if (chosenYAxis === "obesity") {
-        label = "Obesity:";
-    }
-    else if (chosenYAxis ==='healthcare') {
-        label = "HeathCare:"
-    }
-    else {
-        label = "Smokers:";
-    }
+//     if (chosenYAxis === "obesity") {
+//         ylabel = "obesity:";
+//     }
+//     else if (chosenYAxis ==='healthcare') {
+//         label = "healthcare:"
+//     }
+//     else {
+//         ylabel = "smokes:";
+//     }
 
-    if (chosenXAxis === "income") {
-        label = "Income:";
-    }
-    else if (chosenXAxis === "age") {
-        label ="Age:"
-    }
-    else {
-        label = "Poverty:";
-    }
+//     var xlabel;
 
-    var toolTip = d3.tip()
-        .attr("class", "tooltip")
-        .offset([80, -60])
-        .html(function (d) {
-            return (`${d.chosenYAxis}<br>${d.abbr}<br>${label} ${d[chosenXAxis]}`);
-        });
+//     if (chosenXAxis === "income") {
+//         xlabel = "income:";
+//     }
+//     else if (chosenXAxis === "age") {
+//         xlabel ="age:"
+//     }
+//     else {
+//         xlabel = "poverty:";
+//     }
 
-    circlesGroup.call(toolTip);
+//     var toolTip = d3.tip()
+//         .attr("class", "tooltip")
+//         .offset([80, -60])
+//         .html(function (d) {
+//             return (`${d[chosenYAxis]}<br>${d.abbr}<br>${ylabel}<br>${xlabel} ${d[chosenXAxis]}`);
+//         });
 
-    circlesGroup.on("mouseover", function (data) {
-        toolTip.show(data);
-    })
-        // onmouseout event
-        .on("mouseout", function (data, index) {
-            toolTip.hide(data);
-        });
+//     circlesGroup.call(toolTip);
 
-    return circlesGroup;
-}
+//     circlesGroup.on("mouseover", function (data) {
+//         toolTip.show(data);
+//     })
+//         // onmouseout event
+//         .on("mouseout", function (data, index) {
+//             toolTip.hide(data);
+//         });
+
+//     return circlesGroup;
+// }
 
 
 d3.csv(url).then( function(StateData, err) {
@@ -202,7 +204,7 @@ d3.csv(url).then( function(StateData, err) {
     var smokerLabel = ylabelsGroup.append("text")
         .attr("x", 0)
         .attr("y", 0-20)
-        .attr("value", "smokers") // value to grab for event listener
+        .attr("value", "smokes") // value to grab for event listener
         .classed("active", true)
         .text("Smokers(%)")
         .attr("transform", "rotate(-90)");
@@ -215,7 +217,7 @@ d3.csv(url).then( function(StateData, err) {
         .text("Obesity(%)")
         .attr("transform", "rotate(-90)");
     
-    var heathcareLabel = ylabelsGroup.append("text")
+    var healthcareLabel = ylabelsGroup.append("text")
         .attr("x", 0)
         .attr("y", 0-60)
         .attr("value", "healthcare") // value to grab for event listener
@@ -230,15 +232,15 @@ d3.csv(url).then( function(StateData, err) {
             if (value !== chosenXAxis) {
                 // replaces chosenXAxis with value
                 chosenXAxis = value;
-                // console.log(chosenXAxis)
+                console.log(chosenXAxis)
                 // updates x scale for new data
                 xLinScale = xScale(StateData, chosenXAxis);
                 // updates x axis with transition
                 xAxis = renderXAxis(xLinScale, xAxis);
                 // updates circles with new x values
-                circlesGroup = renderCircles(circlesGroup, xLinScale, chosenXAxis);
+                circlesGroup = renderCircles(circlesGroup, xLinScale, chosenXAxis, yLinScale, chosenYAxis);
                 // updates tooltips with new info
-                circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
+                // circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
 
                 // changes classes to change bold text
                 if(chosenXAxis === 'poverty') {
@@ -286,18 +288,18 @@ d3.csv(url).then( function(StateData, err) {
             if (value !== chosenYAxis) {
                 // replaces chosenXAxis with value
                 chosenYAxis = value;
-                // console.log(chosenXAxis)
+                console.log(chosenYAxis)
                 // updates x scale for new data
-                yLinScale = xScale(StateData, chosenYAxis);
+                yLinScale = yScale(StateData, chosenYAxis);
                 // updates x axis with transition
-                yAxis = renderXAxis(yLinScale, yAxis);
+                yAxis = renderYAxis(yLinScale, yAxis);
                 // updates circles with new x values
-                circlesGroup = renderCircles(circlesGroup, yLinScale, chosenYAxis);
+                circlesGroup = renderCircles(circlesGroup, yLinScale, chosenYAxis, xLinScale, chosenXAxis);
                 // updates tooltips with new info
-                circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
+                // circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
 
                 // changes classes to change bold text
-                if (chosenYAxis === 'smokers') {
+                if (chosenYAxis === 'smokes') {
                     smokerLabel
                         .classed('active', true)
                         .classed('inactive', false);
