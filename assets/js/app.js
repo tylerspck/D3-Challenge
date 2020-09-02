@@ -30,6 +30,8 @@ var chartGroup = svg.append("g")
 var chosenXAxis = "poverty";
 var chosenYAxis = "smokes";
 
+
+
 function xScale(StateData, chosenXAxis) {
     var xLinScale = d3.scaleLinear()
         .domain([d3.min(StateData, d => d[chosenXAxis]) * 0.8,
@@ -80,37 +82,38 @@ function renderCircles(circlesGroup, newXScale, chosenXAxis, newYScale, chosenYA
     return circlesGroup;
 }
 
-function updateToolTip(chosenXAxis, circlesGroup, chosenYAxis) {
+function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup ) {
 
-    // var ylabel;
+    var ylabel;
 
-    // if (chosenYAxis === "obesity") {
-    //     ylabel = "obesity:";
-    // }
-    // else if (chosenYAxis ==='healthcare') {
-    //     ylabel = "healthcare:"
-    // }
-    // else {
-    //     ylabel = "smokes:";
-    // }
+    if (chosenYAxis === "smokes") {
+        ylabel = "Smokes:";
+    }
+    else if (chosenYAxis ==='obesity') {
+        ylabel = "Obesity %:"
+    }
+    else {
+        ylabel = "Healthcare %:";
+    }
 
     var xlabel;
 
     if (chosenXAxis === "income") {
-        xlabel = "income:";
+        xlabel = "Income: $";
     }
     else if (chosenXAxis === "age") {
-        xlabel ="age:"
+        xlabel ="Age:"
     }
     else {
-        xlabel = "poverty:";
+        xlabel = "In Poverty %:";
     }
 
     var toolTip = d3.tip()
         .attr("class", "tooltip")
         .offset([80, -60])
+        .style("background", "lightgray")
         .html(function (data) {
-            return (`${data.state}<br>${data.abbr}<br>${xlabel} ${data[chosenXAxis]}`);
+            return (`${data.state}<br>${data.abbr}<br>${xlabel} ${data[chosenXAxis]}<br>${ylabel} ${data[chosenYAxis]}`);
         });
 
     circlesGroup.call(toolTip);
@@ -150,6 +153,9 @@ d3.csv(url).then( function(StateData, err) {
         // data.smokesHigh = +data.smokesHigh;
 
     })
+    
+    
+
 
     var xLinScale = xScale(StateData, chosenXAxis);
     var yLinScale = yScale(StateData, chosenYAxis);
@@ -172,8 +178,8 @@ d3.csv(url).then( function(StateData, err) {
         .append("circle")
         .attr("cx", d => xLinScale(d[chosenXAxis]))
         .attr("cy", d => yLinScale(d[chosenYAxis]))
-        .attr("r", 20)
-        .attr("fill", "pink")
+        .attr("r", 10)
+        .attr("fill", "blue")
         .attr("opacity", ".5");
 
     var xlabelsGroup = chartGroup.append("g")
@@ -236,7 +242,7 @@ d3.csv(url).then( function(StateData, err) {
                 chosenXAxis = value;
                 console.log(chosenXAxis)
                 // updates x scale for new data
-                xLinScale = yScale(StateData, chosenXAxis);
+                xLinScale = xScale(StateData, chosenXAxis);
                 // updates x axis with transition
                 xAxis = renderXAxis(xLinScale, xAxis);
                 // updates circles with new x values
@@ -296,9 +302,9 @@ d3.csv(url).then( function(StateData, err) {
                 // updates y axis with transition
                 yAxis = renderYAxis(yLinScale, yAxis);
                 // updates circles with new x values
-                circlesGroup = renderCircles(circlesGroup, yLinScale, chosenYAxis, xLinScale, chosenXAxis);
+                circlesGroup = renderCircles(circlesGroup, xLinScale, chosenXAxis, yLinScale, chosenYAxis);
                 // updates tooltips with new info
-                // circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
+                circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
 
                 // changes classes to change bold text
                 if (chosenYAxis === 'smokes') {
@@ -340,3 +346,5 @@ d3.csv(url).then( function(StateData, err) {
     console.log(chosenXAxis)
     console.log(chosenYAxis)
 });
+
+function init()
