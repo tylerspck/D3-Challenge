@@ -190,21 +190,21 @@ d3.csv(url).then( function(StateData, err) {
         .attr("y", 20)
         .attr("value", "poverty") // value to grab for event listener
         .classed("active", true)
-        .text("Poverty(%)");
+        .text("In Poverty(%)");
     
     var ageLabel = xlabelsGroup.append("text")
         .attr("x", 0)
         .attr("y", 40)
         .attr("value", "age") // value to grab for event listener
-        .classed("active", true)
-        .text("Age(avg");
+        .classed("inactive", true)
+        .text("Average Age");
 
     var incomeLabel = xlabelsGroup.append("text")
         .attr("x", 0)
         .attr("y", 60)
         .attr("value", "income") // value to grab for event listener
-        .classed("active", true)
-        .text("Income(avg)");
+        .classed("inactive", true)
+        .text("Average Income");
     
     var ylabelsGroup = chartGroup.append("g")
         .attr("transform", `translate(${0-(margin.left/3)},${chartHeight/2})`)
@@ -221,7 +221,7 @@ d3.csv(url).then( function(StateData, err) {
         .attr("x", 0)
         .attr("y", 0-40)
         .attr("value", "obesity") // value to grab for event listener
-        .classed("active", true)
+        .classed("inactive", true)
         .text("Obesity(%)")
         .attr("transform", "rotate(-90)");
     
@@ -229,8 +229,8 @@ d3.csv(url).then( function(StateData, err) {
         .attr("x", 0)
         .attr("y", 0-60)
         .attr("value", "healthcare") // value to grab for event listener
-        .classed("active", true)
-        .text("Healthcare(%)")
+        .classed("inactive", true)
+        .text("Without Healthcare(%)")
         .attr("transform", "rotate(-90)");
         
     xlabelsGroup.selectAll("text")
@@ -343,6 +343,12 @@ d3.csv(url).then( function(StateData, err) {
                 }
             }
         });
+    updateToolTip(chosenXAxis, chosenYAxis, circlesGroup)
     console.log(chosenXAxis)
     console.log(chosenYAxis)
 });
+
+function init() {
+    simulate(document.getElementById("btn"), "click");
+};
+
