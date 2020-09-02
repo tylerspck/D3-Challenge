@@ -346,5 +346,3 @@ d3.csv(url).then( function(StateData, err) {
     console.log(chosenXAxis)
     console.log(chosenYAxis)
 });
-
-function init()
